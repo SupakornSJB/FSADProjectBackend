@@ -1,0 +1,6 @@
+@FSADProjectBackend_HostAddress = http://localhost:5213
+
+GET {{FSADProjectBackend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

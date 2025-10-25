@@ -1,0 +1,150 @@
+﻿// Use DBML to define your database structure
+// Docs: https://dbml.dbdiagram.io/docs
+
+Table University {
+  id varchar [pk]
+  name varchar [not null]
+  description varchar [not null]
+  profile_pic byte [not null]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table Problem {
+  id varchar [pk]
+  title varchar [not null]
+  content varchar [not null]
+  created_by_user_id varchar [ref: > User.id, not null]
+  university_id varchar [ref: > University.id, not null]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table ProblemAttachment {
+  id varchar [pk]
+  name varchar [not null]
+  problem_id varchar [ref: > Problem.id, not null]
+  content byte [not null]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table ProblemCommentAttachment {
+  id varchar [pk]
+  name varchar [not null]
+  comment_id varchar [ref: > ProblemComment.id, not null]
+  content byte [not null]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table ProjectAttachment {
+  id varchar [pk]
+  name varchar [not null]
+  project_id varchar [ref: > Project.id, not null]
+  content byte [not null]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table ProjectProgressUpdateAttachment {
+  id varchar [pk]
+  name varchar [not null]
+  progress_update_id varchar [ref: > ProjectProgressUpdate.id, not null]
+  content byte [not null]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table ProblemComment {
+  id varchar [pk]
+  content varchar [not null]
+  user_id varchar [ref: > User.id, not null]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table TagProblemMapping {
+  problem_id varchar [ref: > Problem.id]
+  tag_id varchar [ref: > Tag.id]
+}
+
+Table Tag {
+  id varchar [pk]
+  title varchar [not null]
+  description varchar [not null]
+}
+
+Table ProblemSolution {
+  id varchar [pk]
+  problem_id varchar [ref: > Problem.id, not null]
+  content varchar [not null]
+  created_by varchar [not null]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table ProblemSolutionComment {
+  id varchar [pk]
+  solution_id varchar [ref: > Problem.id, not null]
+  content varchar [not null]
+  created_by varchar [not null, ref: > User.id]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table Project {
+  id varchar [pk]
+  title varchar [not null]
+  solution_id varchar [ref: > ProblemSolution.id]
+  problem_solver_id varchar [ref: > ProblemSolver.id]
+  content varchar [not null]
+  created_by varchar [not null, ref: > User.id]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+  approved_by varchar [ref: > User.id]
+  approved_time datetime [not null]
+}
+
+Table ProjectProgressUpdate {
+  id varchar [pk]
+  title varchar [not null]
+  project_id varchar [ref: > Project.id]
+  problem_solver_id varchar [ref: > ProblemSolver.id]
+  content varchar [not null]
+  created_by varchar [not null]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+}
+
+Table User {
+  id varchar [pk]
+  username varchar [not null, unique]
+  email varchar [not null, unique]
+  created_at datetime [not null]
+  updated_at datetime [not null]
+  profile_pic byte [not null]
+  university_id varchar [not null, ref: > University.id]
+  role varchar [not null]
+}
+
+Table UserInterest {
+  id varchar [pk]
+  title varchar [not null]
+}
+
+Table UserInterestMapping {
+  user_id varchar [ref: > User.id, not null]
+  user_interest_id varchar [ref: > UserInterest.id, not null]
+}
+
+Table UserProblemSolverMapping {
+  user_id varchar [ref: > User.id, not null]
+  problem_solver varchar [ref: > ProblemSolver.id, not null]
+}
+
+Table ProblemSolver {
+  id varchar [pk]
+  name varchar [not null, unique]
+  profile_pic byte [not null]
+}
