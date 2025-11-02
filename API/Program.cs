@@ -1,34 +1,64 @@
-using FSADProjectBackend.Autofac;
-using FSADProjectBackend.Contexts;
+using FSADProjectBackend.Autofac; using FSADProjectBackend.Contexts;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddAuthorization();
-builder.Services.AddAuthentication(options =>
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ApiScope", policy =>
     {
-        options.DefaultScheme = "Cookies";
-        options.DefaultChallengeScheme = "oidc";
-    })
-    .AddCookie("Cookies")
-    .AddOpenIdConnect("oidc", options =>
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim("scope", "api1");     
+    });    
+});
+
+
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer("Bearer", options =>
     {
-        options.Authority = "https://identityserver:8080";
-
-        options.ClientId = "web";
-        options.ClientSecret = "secret";
-        options.ResponseType = "code";
-
-        options.Scope.Clear();
-        options.Scope.Add("openid");
-        options.Scope.Add("profile");
-
-        options.MapInboundClaims = false; // Don't rename claim types
-        options.SaveTokens = true;
+        options.Authority = "https://localhost:5000"; // IdentityServer URL, Todo: Change to use environment variable
+        options.RequireHttpsMetadata = false;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = false
+        };
+        
+        // For debugging purposes only
+        options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine($"Authentication failed: {context.Exception.Message}");
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                Console.WriteLine("Token validated successfully");
+                return Task.CompletedTask;
+            }
+        };
     });
 
 builder.Services.AddControllers();
+
+var corsPolicy = "CorsPolicy";
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: corsPolicy,
+        policy => policy.WithOrigins("http://localhost:5173")  // Frontend URL, Todo: Change to use environment variable
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials()
+        );
+});
+builder.Services.AddEndpointsApiExplorer(); // Enables API explorer for Swagger
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "UPTS API", Version = "v1" });
+});
 
 // Register Autofac
 AutofacRegister.Register(builder);
@@ -42,6 +72,8 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.UseSwagger();   
+    app.UseSwaggerUI();   
 }
 
 // Autoapply migrations
@@ -63,7 +95,8 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseHttpsRedirection();
-app.UseAuthorization();
+app.UseCors(corsPolicy);
 app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 app.Run();

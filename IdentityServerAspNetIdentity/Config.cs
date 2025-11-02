@@ -30,7 +30,7 @@ public static class Config
             AllowedScopes = { "api1" }
         },
 
-        // Interactive client 
+        // Interactive client, May not be required but added just in case
         new Client
         {
             ClientId = "web",
@@ -38,9 +38,32 @@ public static class Config
 
             AllowedGrantTypes = GrantTypes.Code,
 
-            RedirectUris = { "https://localhost:5002/signin-oidc" },
-            FrontChannelLogoutUri = "https://localhost:5002/signout-oidc",
-            PostLogoutRedirectUris = { "https://localhost:5002/signout-callback-oidc" },
+            RedirectUris = { "https://localhost:5001/signin-oidc" },
+            FrontChannelLogoutUri = "https://localhost:5001/signout-oidc",
+            PostLogoutRedirectUris = { "https://localhost:5001/signout-callback-oidc" },
+
+            AllowOfflineAccess = true,
+            AllowedScopes =
+            {
+                IdentityServerConstants.StandardScopes.OpenId,
+                IdentityServerConstants.StandardScopes.Profile,
+                "api1"
+            }
+        },
+        
+        // React Frontend client 
+        new Client
+        {
+            ClientId = "react-app",
+            ClientName = "React SPA",
+
+            AllowedGrantTypes = GrantTypes.Code,
+            RequireClientSecret = false, 
+            RequirePkce = true, // Required for public clients / React client
+
+            RedirectUris = { "http://localhost:5173/callback" }, 
+            PostLogoutRedirectUris = { "http://localhost:5173" }, 
+            AllowedCorsOrigins = { "http://localhost:5173" }, 
 
             AllowOfflineAccess = true,
             AllowedScopes =

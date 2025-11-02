@@ -34,7 +34,7 @@ public static class SeedData
                 new Claim(JwtClaimTypes.FamilyName, "Smith"),
                 new Claim(JwtClaimTypes.WebSite, "http://alice.example.com"),
             ]            ,
-            "pass123$"
+            "Pass123$"
         );
     
         CreateMockUser(
