@@ -22,11 +22,15 @@ dotnet 9.0.300
 ```
 docker-compose -f dev-compose.yml up 
 ```
-3. This backend requires 2 projects to run simuteneously: API and IdentityServer. After the project is running, start each project individually
+3. You may need to generates dev https certificate with this commands
+```
+dotnet dev-certs https
+```
+4. This backend requires 2 projects to run simuteneously: API and IdentityServer. After the project is running, start each project individually
 ```
 cd Api # or cd IdentityServer for IdentityServer
 dotnet restore
 dotnet run
 ```
-4. Start your frontend project, if the frontend has OIDC configured, it should automatically redirect you to the login page
-5. Login to access protected frontend routes and protected API.
+5. Start your frontend project, if the frontend has OIDC configured, it should automatically redirect you to the login page. Ref: [Sample Frontend with OIDC Configured](https://github.com/SupakornSJB/ait-front-ref-with-auth#)
+6. Login to access protected frontend routes and protected API. 
