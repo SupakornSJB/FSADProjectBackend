@@ -7,17 +7,17 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["Api/FSADProjectBackend.csproj", "FSADProjectBackend/"]
-RUN dotnet restore "Api/FSADProjectBackend.csproj"
+COPY ["Api/Api.csproj", "Api/"]
+RUN dotnet restore "Api/Api.csproj"
 COPY . .
-WORKDIR "/src/FSADProjectBackend"
-RUN dotnet build "./FSADProjectBackend.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/Api"
+RUN dotnet build "./Api.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./FSADProjectBackend.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./Api.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "FSADProjectBackend.dll"]
+ENTRYPOINT ["dotnet", "Api.dll"]

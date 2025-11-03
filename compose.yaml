@@ -18,9 +18,7 @@
   identityserver:
     build:
       context: .
-      dockerfile: IdentityServerAspNetIdentity/Dockerfile
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      dockerfile: IdentityServer/Dockerfile
     depends_on:
       postgres:
         condition: service_healthy
