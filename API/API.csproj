@@ -11,6 +11,7 @@
     <ItemGroup>
         <PackageReference Include="Autofac" Version="8.4.0" />
         <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="10.0.0" />
+        <PackageReference Include="Duende.IdentityModel" Version="7.1.0" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.10" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="9.0.10" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
@@ -28,8 +29,6 @@
 
     <ItemGroup>
       <Folder Include="Enums\" />
-      <Folder Include="Interfaces\" />
-      <Folder Include="Services\" />
     </ItemGroup>
 
 </Project>

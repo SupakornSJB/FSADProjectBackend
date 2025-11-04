@@ -6,6 +6,10 @@ namespace FSADProjectBackend.Contexts;
 
 public class MongoDbContext: DbContext
 {
+    public DbSet<Problem> Problems { get; set; }
+
+    public MongoDbContext(DbContextOptions<MongoDbContext> options) : base(options) { }
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Problem>().ToCollection("Problems");
@@ -13,5 +17,6 @@ public class MongoDbContext: DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        optionsBuilder.UseMongoDB("mongodb://localhost:27017", "Database");  // Todo: Change to use environment variable
     }
 }
