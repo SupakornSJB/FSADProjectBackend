@@ -17,14 +17,22 @@ public class ProblemService: IProblemService
        _userInfoService = userInfoService;
     }
     
-    public IEnumerable<Models.Problem> GetProblems()
+    public IEnumerable<Models.Problem> GetProblems(int? page = null, int? pageSize = null)
     {
         return _mongoDbContext.Problems;
     }
 
-    public async Task<Models.Problem?> GetProblemById(string id)
+    public async Task<Models.Problem> GetProblemById(string id)
     {
-        return await _mongoDbContext.Problems.FindAsync(new ObjectId(id));
+        var problem = await _mongoDbContext.Problems.FindAsync(new ObjectId(id));
+        if (problem == null) throw new Exception("Problem not found");
+        return problem;
+    }
+
+    public async Task<IEnumerable<Models.Problem>> GetProblemsByIds(string[] ids)
+    {
+        var objectIds = ids.Select(x => new ObjectId(x));
+        return _mongoDbContext.Problems.Where(x => objectIds.Contains(x.Id));
     }
 
     public async Task<List<Models.Problem>> GetUsersProblems()
@@ -82,5 +90,11 @@ public class ProblemService: IProblemService
         {
             throw new UnauthorizedAccessException("You are not authorized to update this problem"); 
         }
+    }
+
+    public async Task IncrementViewCount(Models.Problem problem)
+    {
+        problem.ViewCount++;
+        await _mongoDbContext.SaveChangesAsync();
     }
 }

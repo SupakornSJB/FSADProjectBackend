@@ -16,7 +16,7 @@ public static class CreateProblemViewmodelExtension
 {
     public static Models.Problem ConvertToProblem(this CreateProblemViewmodel viewmodel, UserClaimsViewmodel claims)
     {
-        return new Models.Problem 
+        return new Models.Problem
         {
             Name = viewmodel.Name,
             Content = viewmodel.Content,
@@ -24,7 +24,8 @@ public static class CreateProblemViewmodelExtension
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             Solutions = new List<ProblemSolution>(),
-            CreatedBy = claims
+            CreatedBy = claims,
+            ViewCount = 0
         };
     }
 } 

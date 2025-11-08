@@ -1,4 +1,5 @@
 ﻿using FSADProjectBackend.Interfaces.Problem;
+using FSADProjectBackend.Models;
 using FSADProjectBackend.Viewmodels.Problem;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,19 +25,22 @@ public class ProblemController: ControllerBase
     }
 
     [HttpGet("{id}")]   
-    public async Task<IActionResult> GetProblem(string id)
+    public async Task<ActionResult<Problem>> GetProblem(string id)
     {
-        var problem = await _problemService.GetProblemById(id);
-        if (problem == null)
+        try
         {
-            return NotFound();   
+            var problem = await _problemService.GetProblemById(id);
+            await _problemService.IncrementViewCount(problem);
+            return Ok(problem);
         }
-        
-        return Ok(problem);   
+        catch (Exception ex) when (ex.Message == "Problem not found")
+        {
+            return NotFound(ex);
+        }
     }
 
     [HttpGet("user")]
-    public async Task<IActionResult> GetUserCreatedProblem()
+    public async Task<ActionResult<Problem>> GetUserCreatedProblem()
     {
         var problems = await _problemService.GetUsersProblems();
         if (problems.Count == 0)
@@ -80,5 +84,10 @@ public class ProblemController: ControllerBase
         {
             return Unauthorized(e.Message);         
         }
+    }
+
+    public async Task<IActionResult> ToggleUpvoteDownvoteProblem()
+    {
+        throw new NotImplementedException();
     }
 }

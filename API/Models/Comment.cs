@@ -17,4 +17,6 @@ public class Comment
     public required DateTime CreatedAt { get; set; }
     public required DateTime UpdatedAt { get; set; }
     public required UserClaimsViewmodel CreatedBy { get; set; }
+    
+    public required ICollection<Comment> ChildComments { get; set; }
 }

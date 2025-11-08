@@ -25,4 +25,7 @@ public class Problem
     public ICollection<Comment> Comments { get; set; }
     public ICollection<ProblemSolution> Solutions { get; set; }
     public ICollection<Attachment> Attachments { get; set; }
+    
+    [BsonDefaultValue(0)]
+    public required int ViewCount { get; set; }
 }
