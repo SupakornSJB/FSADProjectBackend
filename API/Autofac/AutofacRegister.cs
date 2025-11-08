@@ -31,13 +31,38 @@ public static class AutofacRegister
                 .InstancePerLifetimeScope();
             builder.Register(c => new UserInfoService(
                     c.Resolve<HttpClient>(), 
-                    c.Resolve<IHttpContextAccessor>()))
+                    c.Resolve<IHttpContextAccessor>()
+                ))
                 .As<IUserInfoService>()
                 .InstancePerLifetimeScope();
             builder.Register(c => new ProblemService(
                     c.Resolve<MongoDbContext>(), 
-                    c.Resolve<IUserInfoService>()))
+                    c.Resolve<IUserInfoService>()
+                ))
                 .As<IProblemService>()
+                .InstancePerLifetimeScope();
+            builder.Register(c => new ProblemCommentService(
+                    c.Resolve<IProblemService>(),
+                    c.Resolve<MongoDbContext>(),
+                    c.Resolve<IUserInfoService>(),
+                    c.Resolve<IProblemCommentUpvoteDownvoteService>() 
+                ))
+                .As<IProblemCommentService>()
+                .InstancePerLifetimeScope();
+            builder.Register(c => new ProblemCommentUpvoteDownvoteService(
+                    c.Resolve<PgDbContext>(),
+                    c.Resolve<IUserInfoService>(),
+                    c.Resolve<IProblemService>()
+                ))
+                .As<IProblemCommentUpvoteDownvoteService>()
+                .InstancePerLifetimeScope();
+
+            builder.Register(c => new ProblemUpvoteDownvoteService(
+                    c.Resolve<PgDbContext>(),
+                    c.Resolve<IUserInfoService>(),
+                    c.Resolve<IProblemService>()
+                ))
+                .As<IProblemUpvoteDownvoteService>()
                 .InstancePerLifetimeScope();
         });
     }

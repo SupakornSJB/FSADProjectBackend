@@ -20,10 +20,11 @@ public static class CreateProblemViewmodelExtension
         {
             Name = viewmodel.Name,
             Content = viewmodel.Content,
-            Attachments = viewmodel.Attachments,
+            Attachments = viewmodel.Attachments ?? new List<Attachment>() ,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             Solutions = new List<ProblemSolution>(),
+            Comments = new List<Models.Comment>(),
             CreatedBy = claims,
             ViewCount = 0
         };

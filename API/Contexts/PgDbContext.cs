@@ -30,7 +30,7 @@ public class PgDbContext(DbContextOptions<PgDbContext> options) : DbContext(opti
         
         // Tag Mapping
         modelBuilder.Entity<ProblemTagMapping>()
-            .HasKey(x => new { x.Tag.Id, x.ProblemId });
+            .HasKey(x => new { x.TagId, x.ProblemId });
         modelBuilder.Entity<ProblemTagMapping>()
             .HasOne(x => x.Tag)
             .WithMany(x => x.ProblemTagMappings)

@@ -2,6 +2,7 @@
 using FSADProjectBackend.Interfaces.Problem;
 using FSADProjectBackend.Interfaces.User;
 using FSADProjectBackend.Models;
+using FSADProjectBackend.Viewmodels.Comment;
 using MongoDB.Bson;
 
 namespace FSADProjectBackend.Services.Problem;
@@ -10,21 +11,18 @@ public class ProblemCommentService: IProblemCommentService
 {
     private readonly IProblemService _problemService;
     private readonly MongoDbContext _mongoDbContext;
-    private readonly PgDbContext _pgDbContext;
     private readonly IUserInfoService _userInfoService;
     private readonly IProblemCommentUpvoteDownvoteService _problemCommentUpvoteDownvoteService;
     
     public ProblemCommentService(
         IProblemService problemService, 
         MongoDbContext mongoDbContext, 
-        PgDbContext pgDbContext, 
         IUserInfoService userInfoService,
         IProblemCommentUpvoteDownvoteService problemCommentUpvoteDownvoteService
     )
     {
         _problemService = problemService;
         _mongoDbContext = mongoDbContext;
-        _pgDbContext = pgDbContext;
         _userInfoService = userInfoService;
         _problemCommentUpvoteDownvoteService = problemCommentUpvoteDownvoteService;
     }
@@ -36,12 +34,12 @@ public class ProblemCommentService: IProblemCommentService
         return problem.Comments.FirstOrDefault(x => x.Id == id) ?? throw new Exception("Comment not found");
     }
     
-    public async Task CreateComment(string problemId, Comment comment)
+    public async Task CreateComment(string problemId, CreateCommentViewmodel comment)
     {
         var userInfo = await _userInfoService.GetUserInfoAsUserClaimsVm();
         var problem = await _problemService.GetProblemById(problemId);
-        comment.CreatedBy = userInfo;
-        problem.Comments.Add(comment);
+        var newComment = comment.ConvertToComment(userInfo);
+        problem.Comments.Add(newComment);
         await _mongoDbContext.SaveChangesAsync();
     }
 

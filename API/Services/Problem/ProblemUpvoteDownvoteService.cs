@@ -37,7 +37,7 @@ public class ProblemUpvoteDownvoteService: IProblemUpvoteDownvoteService
             .ToDictionary(x => x.ProblemId, x => x.IsUpvote); 
     }
     
-    public async Task<Dictionary<string, int>> GetUpvoteOrDownvoteNumber(bool isUpvote)
+    public Dictionary<string, int> GetUpvoteOrDownvoteNumber(bool isUpvote)
     {
         return _pgDbContext.UserProblemVoteMappings
             .Where(x => x.IsUpvote == isUpvote)
@@ -69,14 +69,10 @@ public class ProblemUpvoteDownvoteService: IProblemUpvoteDownvoteService
         });
     }
     
-    public async Task UpvoteOrDownvoteProblem(string problemId, string commentId, bool isUpvote)
+    public async Task UpvoteOrDownvoteProblem(string problemId, bool isUpvote)
     {
         var comment = await _problemService.GetProblemById(problemId);
-        var mapping = await _pgDbContext.UserProblemVoteMappings.FindAsync(new
-        {
-            UserSubject = comment.CreatedBy.Subject,
-            ProblemId = problemId,
-        });
+        var mapping = await _pgDbContext.UserProblemVoteMappings.FindAsync( comment.CreatedBy.Subject, problemId );
 
         if (mapping == null)
         {

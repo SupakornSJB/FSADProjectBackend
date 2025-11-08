@@ -1,4 +1,5 @@
 ﻿using FSADProjectBackend.Models;
+using FSADProjectBackend.Viewmodels.Comment;
 
 namespace FSADProjectBackend.Interfaces.Problem;
 
@@ -6,7 +7,7 @@ public interface IProblemCommentService
 {
     public Task<Comment> GetCommentById(string problemId, string commentId);
 
-    public Task CreateComment(string problemId, Comment comment);
+    public Task CreateComment(string problemId, CreateCommentViewmodel comment);
 
     public Task<Comment[]>
         GetOrderedCommentsByProblemId(string problemId, int? page = null, int? pageSize = null);

@@ -2,9 +2,9 @@
 
 public interface IProblemCommentUpvoteDownvoteService
 {
-    public Task<Dictionary<string, bool>> GetUpvoteOrDownvoteListOfAllCommentsMadeByUser(string problemId);
+    public Task<Dictionary<string, bool>> GetUpvoteOrDownvoteListOfCommentsMadeByUser(string problemId);
 
-    public Task<Dictionary<string, int>> GetUpvoteOrDownvoteNumberOfAllCommentsOfProblem(string problemId, bool isUpvote);
+    public Task<Dictionary<string, int>> GetUpvoteOrDownvoteNumberOfComments(string problemId, bool isUpvote);
     
     public Task<Dictionary<string, bool>> GetUpvoteOrDownvoteListOfCommentsMadeByUser(string problemId, string[] comments);
 

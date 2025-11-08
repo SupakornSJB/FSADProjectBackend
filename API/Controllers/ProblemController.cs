@@ -12,10 +12,12 @@ namespace FSADProjectBackend.Controllers;
 public class ProblemController: ControllerBase
 {
     private readonly IProblemService _problemService;
+    private readonly IProblemUpvoteDownvoteService _problemUpvoteDownvoteService;
     
-    public ProblemController(IProblemService problemService)
+    public ProblemController(IProblemService problemService, IProblemUpvoteDownvoteService problemUpvoteDownvoteService)
     {
         _problemService = problemService;
+        _problemUpvoteDownvoteService = problemUpvoteDownvoteService;
     }
     
     [HttpGet("all")]
@@ -86,8 +88,10 @@ public class ProblemController: ControllerBase
         }
     }
 
-    public async Task<IActionResult> ToggleUpvoteDownvoteProblem()
+    [HttpPut("{problemId}/upvote-downvote/{isUpvote}")]
+    public async Task<IActionResult> ToggleUpvoteDownvoteProblem(string problemId, bool isUpvote)
     {
-        throw new NotImplementedException();
+        await _problemUpvoteDownvoteService.UpvoteOrDownvoteProblem(problemId, isUpvote);
+        return Ok();   
     }
 }

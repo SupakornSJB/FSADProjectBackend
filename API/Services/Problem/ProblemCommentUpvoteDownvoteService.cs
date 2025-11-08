@@ -10,21 +10,18 @@ public class ProblemCommentUpvoteDownvoteService: IProblemCommentUpvoteDownvoteS
     private readonly IProblemService _problemService;
     private readonly IUserInfoService _userInfoService;
     private readonly PgDbContext _pgDbContext;
-    private readonly IProblemCommentService _problemCommentService;
     
     public ProblemCommentUpvoteDownvoteService (
         PgDbContext pgDbContext, 
         IUserInfoService userInfoService, 
-        IProblemService problemService, 
-        IProblemCommentService problemCommentService)
+        IProblemService problemService)
     {
         _problemService = problemService;
         _userInfoService = userInfoService;
         _pgDbContext = pgDbContext;
-        _problemCommentService = problemCommentService;
     }
     
-    public async Task<Dictionary<string, bool>> GetUpvoteOrDownvoteListOfAllCommentsMadeByUser(string problemId)
+    public async Task<Dictionary<string, bool>> GetUpvoteOrDownvoteListOfCommentsMadeByUser(string problemId)
     {
         var userInfo = await _userInfoService.GetUserInfoAsUserClaimsVm();
         return _pgDbContext.UserCommentVoteMappings
@@ -40,7 +37,7 @@ public class ProblemCommentUpvoteDownvoteService: IProblemCommentUpvoteDownvoteS
             .ToDictionary(x => x.CommentId, x => x.IsUpvote);        
     }
 
-    public async Task<Dictionary<string, int>> GetUpvoteOrDownvoteNumberOfAllCommentsOfProblem(string problemId, bool isUpvote)
+    public async Task<Dictionary<string, int>> GetUpvoteOrDownvoteNumberOfComments(string problemId, bool isUpvote)
     {
         var problem = await _problemService.GetProblemById(problemId);
         var commentIds = problem.Comments.Select(x => x.Id.ToString()).ToArray();
@@ -72,19 +69,14 @@ public class ProblemCommentUpvoteDownvoteService: IProblemCommentUpvoteDownvoteS
     
     public async Task UpvoteOrDownvoteComment(string problemId, string commentId, bool isUpvote)
     {
-        var comment = await _problemCommentService.GetCommentById(problemId, commentId);
-        var mapping = await _pgDbContext.UserCommentVoteMappings.FindAsync(new
-        {
-            UserSubject = comment.CreatedBy.Subject,
-            ProblemId = problemId,
-            CommentId = commentId,
-        });
+        var userInfo = await _userInfoService.GetUserInfoAsUserClaimsVm();
+        var mapping = await _pgDbContext.UserCommentVoteMappings.FindAsync( userInfo.Subject, problemId, commentId );
 
         if (mapping == null)
         {
             _pgDbContext.UserCommentVoteMappings.Add(new UserProblemCommentVoteMapping
             {
-                UserSubject = comment.CreatedBy.Subject,
+                UserSubject = userInfo.Subject,
                 ProblemId = problemId,
                 CommentId = commentId,
                 IsUpvote = isUpvote

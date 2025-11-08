@@ -11,14 +11,12 @@ public class TestController: ControllerBase
     [HttpGet]    
     public IActionResult Get()
     {
-        var o = new { a = 1, b = 2 };
-        return Ok(o);
+        return Ok("Hello, this is protected API!");
     }
 
     [HttpGet("v2")]    
     public IActionResult Get2()
     {
-        var o = new { c = 1, d = 2 };
-        return Ok(o);
+        return Ok("Hello, this is unprotected API!");
     }
 }
