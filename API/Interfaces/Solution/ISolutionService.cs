@@ -1,6 +1,9 @@
-﻿namespace FSADProjectBackend.Interfaces.Solution;
+﻿using FSADProjectBackend.Models;
 
-public class ISolutionService
+namespace FSADProjectBackend.Interfaces.Solution;
+
+public interface ISolutionService
 {
-    
+    public Task CreateSolution(string problemId, string content);
+    public Task<IEnumerable<ProblemSolution>> GetSolutionOfUser();
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FSADProjectBackend.Interfaces.Solution;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FSADProjectBackend.Controllers;
@@ -6,20 +7,26 @@ namespace FSADProjectBackend.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
-public class SolutionController
+public class SolutionController: ControllerBase
 {
-    public Task<IActionResult> GetProposedSolutionOfUser(string userId)
-    {
-        throw new NotImplementedException();      
-    }
+    private readonly ISolutionService _solutionService;
     
-    public Task<IActionResult> GetSolutionOfProblem()
+    public SolutionController(ISolutionService solutionService)
     {
-        throw new NotImplementedException();      
+        _solutionService = solutionService;
+    }
+        
+    [HttpGet("user/{userId}")]
+    public async Task<IActionResult> GetProposedSolutionOfUser(string userId)
+    {
+        var solutions = await _solutionService.GetSolutionOfUser();
+        return Ok(solutions);
     }
 
-    public Task<IActionResult> CreateSolution()
+    [HttpPost("{problemId}")]
+    public async Task<IActionResult> CreateSolution(string problemId, string content)
     {
-        throw new NotImplementedException();      
+        await _solutionService.CreateSolution(problemId, content);
+        return Ok();
     }
 }

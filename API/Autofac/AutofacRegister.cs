@@ -2,9 +2,11 @@
 using Autofac.Extensions.DependencyInjection;
 using FSADProjectBackend.Contexts;
 using FSADProjectBackend.Interfaces.Problem;
+using FSADProjectBackend.Interfaces.Solution;
 using FSADProjectBackend.Interfaces.Tag;
 using FSADProjectBackend.Interfaces.User;
 using FSADProjectBackend.Services.Problem;
+using FSADProjectBackend.Services.Solution;
 using FSADProjectBackend.Services.Tag;
 using FSADProjectBackend.Services.User;
 using Microsoft.EntityFrameworkCore;
@@ -39,7 +41,9 @@ public static class AutofacRegister
                 .InstancePerLifetimeScope();
             builder.Register(c => new ProblemService(
                     c.Resolve<MongoDbContext>(), 
-                    c.Resolve<IUserInfoService>()
+                    c.Resolve<IUserInfoService>(),
+                    c.Resolve<ITagService>(),
+                    c.Resolve<PgDbContext>()
                 ))
                 .As<IProblemService>()
                 .InstancePerLifetimeScope();
@@ -68,8 +72,16 @@ public static class AutofacRegister
                 .InstancePerLifetimeScope();
             
             builder.Register(c => new TagService(
-                c.Resolve<PgDbContext>()))
+                    c.Resolve<PgDbContext>()))
                 .As<ITagService>()
+                .InstancePerLifetimeScope();
+            
+            builder.Register(c => new SolutionService(
+                    c.Resolve<IProblemService>(),
+                    c.Resolve<MongoDbContext>(),
+                    c.Resolve<IUserInfoService>()
+                ))
+                .As<ISolutionService>()
                 .InstancePerLifetimeScope();
         });
     }
