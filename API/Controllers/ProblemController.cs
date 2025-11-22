@@ -20,17 +20,38 @@ public class ProblemController: ControllerBase
         IProblemService problemService,
         IProblemUpvoteDownvoteService problemUpvoteDownvoteService,
         ITagService tagService
-        )
+    )
     {
         _problemService = problemService;
         _problemUpvoteDownvoteService = problemUpvoteDownvoteService;
         _tagService = tagService;
     }
     
-    [HttpGet("all")]
-    public IActionResult GetAllProblems([FromQuery] int? page = null, [FromQuery] int? pageSize = null)
+    [HttpGet]
+    public IActionResult GetAllProblems(
+        [FromQuery] int? page = null, 
+        [FromQuery] int? pageSize = null, 
+        [FromQuery] string? keywordString = null, 
+        [FromQuery] string[]? tags = null
+    )
     {
-        return Ok(_problemService.GetProblems(page, pageSize));
+        var filteredProblems = _problemService.GetProblems();
+        if (page != null && pageSize != null)
+        {
+            filteredProblems = _problemService.FilterByPageAndPageSizes(filteredProblems, page.Value, pageSize.Value);
+        }
+
+        if (!string.IsNullOrEmpty(keywordString))
+        {
+            filteredProblems = _problemService.FilterByKeywords(filteredProblems, keywordString);
+        }
+
+        if (tags != null && tags.Any())
+        {
+            filteredProblems = _problemService.FilterByTags(filteredProblems, tags);
+        }
+
+        return new JsonResult(filteredProblems);
     }
 
     [HttpGet("{id}")]   
@@ -65,7 +86,7 @@ public class ProblemController: ControllerBase
     {
         var created = await _problemService.CreateProblem(problem);
         await _tagService.UpdateProblemTags(created.Id.ToString(), problem.Tags);
-        return CreatedAtAction(nameof(GetProblem), new { id = created.Id }, created);   
+        return CreatedAtAction(nameof(GetProblem), new { id = created.Id.ToString() }, created);   
     }
 
     [HttpPut("{id}")] 

@@ -64,7 +64,7 @@ public class TagService: ITagService
         await _pgDbContext.SaveChangesAsync();
     }
     
-    private IEnumerable<Models.Tag> SearchTagsByNames(IEnumerable<string> tagNames)
+    public IEnumerable<Models.Tag> SearchTagsByNames(IEnumerable<string> tagNames)
     {
         return _pgDbContext.Tags.Where(x => tagNames.Contains(x.Name));
     }
