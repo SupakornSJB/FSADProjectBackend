@@ -1,5 +1,4 @@
 ﻿using FSADProjectBackend.Interfaces.Problem;
-using FSADProjectBackend.Models;
 using FSADProjectBackend.Viewmodels.Comment;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +29,7 @@ public class ProblemCommentController: ControllerBase
     }
 
     [HttpPost("{problemId}/{parentCommentId}", Name = "ReplyToComment")]
-    public async Task<IActionResult> ReplyToComment(string problemId, string parentCommentId, [FromBody] Comment comment)
+    public async Task<IActionResult> ReplyToComment(string problemId, string parentCommentId, [FromBody] CreateCommentViewmodel comment)
     {
         await _problemCommentService.ReplyToComment(problemId, parentCommentId, comment);
         return Ok();

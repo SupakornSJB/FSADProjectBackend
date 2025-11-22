@@ -34,13 +34,14 @@ public class ProblemCommentService: IProblemCommentService
         return problem.Comments.FirstOrDefault(x => x.Id == id) ?? throw new Exception("Comment not found");
     }
     
-    public async Task CreateComment(string problemId, CreateCommentViewmodel comment)
+    public async Task<string> CreateComment(string problemId, CreateCommentViewmodel comment)
     {
         var userInfo = await _userInfoService.GetUserInfoAsUserClaimsVm();
         var problem = await _problemService.GetProblemById(problemId);
         var newComment = comment.ConvertToComment(userInfo);
         problem.Comments.Add(newComment);
         await _mongoDbContext.SaveChangesAsync();
+        return newComment.Id.ToString();
     }
 
     public async Task<Comment[]> GetOrderedCommentsByProblemId(string problemId, int? page = null, int? pageSize = null)
@@ -68,15 +69,16 @@ public class ProblemCommentService: IProblemCommentService
             .ToArray();
     }
     
-    public async Task ReplyToComment(string problemId, string parentCommentId, Comment comment)
+    public async Task<string> ReplyToComment(string problemId, string parentCommentId, CreateCommentViewmodel comment)
     {
         var parentComment = await GetCommentById(problemId, parentCommentId);
         var userInfo = await _userInfoService.GetUserInfoAsUserClaimsVm();
         if (parentComment == null) throw new Exception("Cannot create reply to comment");
         
-        comment.CreatedBy = userInfo;
-        parentComment.ChildComments.Add(comment);
+        var newComment = comment.ConvertToComment(userInfo);
+        parentComment.ChildComments.Add(newComment);
         await _mongoDbContext.SaveChangesAsync();
+        return newComment.Id.ToString();
     }
     
 

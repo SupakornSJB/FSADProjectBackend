@@ -10,6 +10,7 @@ public class CreateProblemViewmodel
     public required string Content { get; set; }
     
     public ICollection<Attachment> Attachments { get; set; }   
+    public ICollection<string> Tags { get; set; }   
 }
 
 public static class CreateProblemViewmodelExtension

@@ -1,4 +1,5 @@
 ﻿using FSADProjectBackend.Interfaces.Problem;
+using FSADProjectBackend.Interfaces.Tag;
 using FSADProjectBackend.Models;
 using FSADProjectBackend.Viewmodels.Problem;
 using Microsoft.AspNetCore.Authorization;
@@ -13,17 +14,23 @@ public class ProblemController: ControllerBase
 {
     private readonly IProblemService _problemService;
     private readonly IProblemUpvoteDownvoteService _problemUpvoteDownvoteService;
+    private readonly ITagService _tagService;
     
-    public ProblemController(IProblemService problemService, IProblemUpvoteDownvoteService problemUpvoteDownvoteService)
+    public ProblemController(
+        IProblemService problemService,
+        IProblemUpvoteDownvoteService problemUpvoteDownvoteService,
+        ITagService tagService
+        )
     {
         _problemService = problemService;
         _problemUpvoteDownvoteService = problemUpvoteDownvoteService;
+        _tagService = tagService;
     }
     
     [HttpGet("all")]
-    public IActionResult GetAllProblems()
+    public IActionResult GetAllProblems([FromQuery] int? page = null, [FromQuery] int? pageSize = null)
     {
-        return Ok(_problemService.GetProblems());
+        return Ok(_problemService.GetProblems(page, pageSize));
     }
 
     [HttpGet("{id}")]   
@@ -57,6 +64,7 @@ public class ProblemController: ControllerBase
     public async Task<IActionResult> CreateProblem(CreateProblemViewmodel problem)
     {
         var created = await _problemService.CreateProblem(problem);
+        await _tagService.UpdateProblemTags(created.Id.ToString(), problem.Tags);
         return CreatedAtAction(nameof(GetProblem), new { id = created.Id }, created);   
     }
 
@@ -66,6 +74,7 @@ public class ProblemController: ControllerBase
         try
         {
             var updated = await _problemService.UpdateProblem(id, problem);
+            await _tagService.UpdateProblemTags(updated.Id.ToString(), problem.Tags.ToArray());
             return Ok(updated);
         }
         catch (UnauthorizedAccessException e)

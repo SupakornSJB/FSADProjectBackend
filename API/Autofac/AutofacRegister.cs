@@ -2,8 +2,10 @@
 using Autofac.Extensions.DependencyInjection;
 using FSADProjectBackend.Contexts;
 using FSADProjectBackend.Interfaces.Problem;
+using FSADProjectBackend.Interfaces.Tag;
 using FSADProjectBackend.Interfaces.User;
 using FSADProjectBackend.Services.Problem;
+using FSADProjectBackend.Services.Tag;
 using FSADProjectBackend.Services.User;
 using Microsoft.EntityFrameworkCore;
 
@@ -63,6 +65,11 @@ public static class AutofacRegister
                     c.Resolve<IProblemService>()
                 ))
                 .As<IProblemUpvoteDownvoteService>()
+                .InstancePerLifetimeScope();
+            
+            builder.Register(c => new TagService(
+                c.Resolve<PgDbContext>()))
+                .As<ITagService>()
                 .InstancePerLifetimeScope();
         });
     }
