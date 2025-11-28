@@ -7,7 +7,7 @@ namespace FSADProjectBackend.Controllers;
 [Authorize]
 [ApiController]
 [Route("api/[controller]")]
-public class UserInfoController
+public class UserInfoController: ControllerBase
 {
     private readonly IUserInfoService _userInfoService;
     
@@ -20,5 +20,17 @@ public class UserInfoController
     public async Task<IActionResult> GetCurrentUserInfo()
     {
         return new JsonResult(await _userInfoService.GetUserInfoAsUserClaimsVm());
+    }
+
+    [HttpGet("{userSubject}")]
+    public async Task<IActionResult> GetUserInfoById(string userSubject)
+    {
+        return new JsonResult(await _userInfoService.GetUserInfoAsUserClaimsVm(userSubject));
+    }
+
+    [HttpGet("search/{username}")]
+    public async Task<IActionResult> SearchUsersByName(string username)
+    {
+        throw new NotImplementedException();
     }
 }

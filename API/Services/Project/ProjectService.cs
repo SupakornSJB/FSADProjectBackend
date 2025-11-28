@@ -4,5 +4,4 @@ namespace FSADProjectBackend.Services.Project;
 
 public class ProjectService: IProjectService
 {
-    
 }

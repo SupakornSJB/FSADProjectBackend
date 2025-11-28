@@ -6,8 +6,10 @@ using IdentityServer.Data;
 using IdentityServer.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Filters;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace IdentityServer;
 
@@ -60,6 +62,26 @@ internal static class HostingExtensions
         builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationIdentityDbContext>()
             .AddDefaultTokenProviders();
+
+        builder.Services.AddControllers();
+        builder.Services.AddAuthentication("Bearer")
+            .AddJwtBearer("Bearer", options =>
+            {
+                options.Authority = "https://localhost:5000"; // IdentityServer address
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateAudience = false
+                };
+            });
+        
+        builder.Services.AddAuthorization(options =>
+        {
+            options.AddPolicy("ApiScope", policy =>
+            {
+                policy.RequireClaim("scope", "api1"); 
+            });
+        });
 
         builder.Services
             .AddIdentityServer(options =>
@@ -114,6 +136,7 @@ internal static class HostingExtensions
         app.UseRouting();
         app.UseIdentityServer();
         app.UseAuthorization();
+        app.MapControllers();
 
         app.MapRazorPages()
             .RequireAuthorization();

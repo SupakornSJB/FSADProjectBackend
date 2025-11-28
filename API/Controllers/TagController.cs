@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FSADProjectBackend.Interfaces.Tag;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FSADProjectBackend.Controllers;
@@ -8,11 +9,16 @@ namespace FSADProjectBackend.Controllers;
 [Route("api/[controller]")]
 public class TagController: ControllerBase
 {
-    public TagController() { }
+    private readonly ITagService _tagService; 
+    
+    public TagController(ITagService tagService)
+    {
+        _tagService = tagService; 
+    }
     
     [HttpGet("all")]
-    public Task<IActionResult> GetTags()
+    public IActionResult GetTags([FromQuery] int? page = null, [FromQuery] int? pageSize = null)
     {
-        throw new NotImplementedException();
+        return new JsonResult(_tagService.GetTags(page, pageSize));
     }
 }
