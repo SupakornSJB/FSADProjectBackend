@@ -170,6 +170,7 @@ internal static class HostingExtensions
 
     public static WebApplication ConfigurePipeline(this WebApplication app, IdentityServerSettings identityServerSetting)
     {
+        app.UseForwardedHeaders();
         app.UseSerilogRequestLogging();
 
         if (app.Environment.IsDevelopment())
@@ -178,16 +179,12 @@ internal static class HostingExtensions
         }
         
         InitializeDatabase(app, identityServerSetting);        
-
-        app.UseForwardedHeaders(new ForwardedHeadersOptions
-        {
-            ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-        });
         
         app.UseStaticFiles();
         app.UseRouting();
         app.UseCors("default");
         app.UseIdentityServer();
+        app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
 
