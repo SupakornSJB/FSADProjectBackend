@@ -13,4 +13,5 @@ public class ProblemSolver
     public ICollection<UserProblemSolverMapping> MembersMapping { get; set; }
     [MaxLength(2048)]
     public required string Description { get; set; }
+    public Contact contact { get; set;  }
 }

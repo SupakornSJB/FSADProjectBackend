@@ -108,9 +108,15 @@ public class ProblemSolverMemberService: IProblemSolverMemberService
     public async Task<IEnumerable<Models.ProblemSolver>> GetAllProblemSolverGroupOfUser()
     {
         var userInfo = await _userInfoService.GetUserInfoAsUserClaimsVm();
+        return GetAllProblemSolverGroupOfUser(userInfo.Subject);
+    }
+
+    public IEnumerable<Models.ProblemSolver> GetAllProblemSolverGroupOfUser(string userSubject)
+    {
         var allMapping = _pgDbContext.UserProblemSolverMappings
-            .Where(x => x.UserSubject == userInfo.Subject)
-            .Include(x => x.ProblemSolver);
+            .Where(x => x.UserSubject == userSubject)
+            .Include(x => x.ProblemSolver)
+            .ToList();
         return allMapping.DistinctBy(x => x.ProblemSolverId).Select(x => x.ProblemSolver);
     }
 
@@ -128,11 +134,11 @@ public class ProblemSolverMemberService: IProblemSolverMemberService
         var userRole = GetUserRoleInProblemSolverGroup(problemSolverGroupId, userInfo.Subject);
         if (userRole != ProblemSolverRole.Owner)
         {
-            throw new Exception("Cannot invite users to problem solver group. Only owner can invite users");
+            throw new Exception("Do not have permission");
         }
     }
     
-    private ProblemSolverRole? GetUserRoleInProblemSolverGroup(string problemSolverGroupId, string userSubject)
+    public ProblemSolverRole? GetUserRoleInProblemSolverGroup(string problemSolverGroupId, string userSubject)
     {
         var userRole = _pgDbContext.UserProblemSolverMappings.Find(problemSolverGroupId, userSubject);
         if (userRole == null)
@@ -141,5 +147,13 @@ public class ProblemSolverMemberService: IProblemSolverMemberService
         }
         
         return userRole.Role;
+    }
+
+    public async Task<bool> CheckIfUserBelongInProblemSolverGroup(string problemSolverId)
+    {
+        var userInfo = await _userInfoService.GetUserInfoAsUserClaimsVm();
+        var allMemberOfProblemSolverGroup = await GetAllMemberOfProblemSolverGroup(problemSolverId);
+        var user = allMemberOfProblemSolverGroup.FirstOrDefault(x => x.Subject == userInfo.Subject);
+        return user != null;
     }
 }

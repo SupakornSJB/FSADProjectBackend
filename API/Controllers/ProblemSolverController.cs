@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FSADProjectBackend.Interfaces.ProblemSolver;
+using FSADProjectBackend.Viewmodels.ProblemSolver;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FSADProjectBackend.Controllers;
@@ -8,43 +10,61 @@ namespace FSADProjectBackend.Controllers;
 [Route("api/[controller]")]
 public class ProblemSolverController: ControllerBase
 {
-    public ProblemSolverController()
+    private readonly IProblemSolverService _problemSolverService;
+    private readonly IProblemSolverMemberService _problemSolverMemberService; 
+    
+    public ProblemSolverController(
+        IProblemSolverService problemSolverService,
+        IProblemSolverMemberService problemSolverMemberService
+    )
     {
+        _problemSolverService = problemSolverService;
+        _problemSolverMemberService = problemSolverMemberService;
     }
     
     [HttpGet]
-    public async Task<IActionResult> GetProblemSolvers([FromQuery] int? page = null, [FromQuery] int? pageSize = null)
+    public IActionResult GetProblemSolvers([FromQuery] int? page = null, [FromQuery] int? pageSize = null)
     {
-        throw new NotImplementedException();
+        return new JsonResult(_problemSolverService.GetProblemSolvers(page, pageSize));
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetProblemSolverById(string id)
+    public IActionResult GetProblemSolverById(string id)
     {
-        throw new NotImplementedException();
+        return new JsonResult(_problemSolverService.GetProblemSolverById(id));
     }
 
     [HttpGet("user/{userId}")] 
     public async Task<IActionResult> GetProblemSolverGroupsOfUser([FromQuery] int? page = null, [FromQuery] int? pageSize = null)
     {
-        throw new NotImplementedException();
+        return new JsonResult(await _problemSolverMemberService.GetAllProblemSolverGroupOfUser());
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateProblemSolverGroup()
+    public async Task<IActionResult> CreateProblemSolverGroup([FromBody] Models.ProblemSolver problemSolver)
     {
-        throw new NotImplementedException();
+        var newProblemSolver = await _problemSolverService.CreateProblemSolver(problemSolver);
+        return new JsonResult(newProblemSolver);
     }
 
     [HttpPut("join/{groupId}")]
     public async Task<IActionResult> JoinProblemSolverGroup(string groupId)
     {
-        throw new NotImplementedException();
+        await _problemSolverMemberService.JoinProblemSolverGroup(groupId);
+        return Ok();
     }
 
     [HttpPut("invite/{groupId}")]
-    public async Task<IActionResult> InviteUsersToProblemSolverGroup(string groupId, [FromBody] string[] userSubjects)
+    public async Task<IActionResult> InviteUsersToProblemSolverGroup(string groupId, [FromBody] ProblemSolverRoleMapViewmodel[] userSubjects)
     {
-        throw new NotImplementedException();
+        await _problemSolverMemberService.InviteUsersToProblemSolverGroup(groupId, userSubjects);
+        return Ok();
+    }
+
+    [HttpDelete("{groupId}")]
+    public async Task<IActionResult> DeleteProblemSolverGroup(string groupId)
+    {
+        _problemSolverService.DeleteProblemSolver(groupId);
+        return Ok();
     }
 }

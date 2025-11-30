@@ -59,10 +59,10 @@ public class ProblemService: IProblemService
         return problems.Where(x => problemIds.Contains(x.Id.ToString()));
     }
     
-    public async Task<Models.Problem> GetProblemById(string id)
+    public async Task<Models.Problem?> GetProblemById(string id)
     {
         var problem = await _mongoDbContext.Problems.FindAsync(new ObjectId(id));
-        return problem ?? throw new Exception("Problem not found");
+        return problem;
     }
 
     public async Task<IEnumerable<Models.Problem>> GetProblemsByIds(string[] ids)

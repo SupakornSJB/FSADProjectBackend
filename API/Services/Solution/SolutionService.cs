@@ -3,6 +3,7 @@ using FSADProjectBackend.Interfaces.Problem;
 using FSADProjectBackend.Interfaces.Solution;
 using FSADProjectBackend.Interfaces.User;
 using FSADProjectBackend.Models;
+using FSADProjectBackend.Viewmodels.Solution;
 
 namespace FSADProjectBackend.Services.Solution;
 
@@ -56,5 +57,18 @@ public class SolutionService: ISolutionService
         }
 
         return allSolutionsByUser;
-    }    
+    }
+
+    public async Task<GetProblemAndSolutionViewmodel?> GetProblemAndSolutionById(string problemId, string solutionId)
+    {
+        var problem = await _problemService.GetProblemById(problemId);
+        var solution = problem?.Solutions.FirstOrDefault(x => x.Id.ToString() == solutionId);
+        if (solution == null || problem == null) return null;
+
+        return new GetProblemAndSolutionViewmodel
+        {
+            Problem = problem,
+            Solution = solution
+        };
+    }
 }
