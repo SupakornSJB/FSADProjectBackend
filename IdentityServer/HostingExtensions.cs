@@ -67,6 +67,24 @@ internal static class HostingExtensions
             options.KnownProxies.Clear();
         });
         
+        builder.Services.ConfigureApplicationCookie(options =>
+        {
+            options.Cookie.SameSite = SameSiteMode.None;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        });
+        
+        builder.Services.AddAuthentication()
+            .AddCookie("idsrv", opts =>
+            {
+                opts.Cookie.SameSite = SameSiteMode.None;
+                opts.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            })
+            .AddCookie("idsrv.external", opts =>
+            {
+                opts.Cookie.SameSite = SameSiteMode.None;
+                opts.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            });
+        
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("default", policy =>
@@ -114,6 +132,7 @@ internal static class HostingExtensions
                 options.Events.RaiseInformationEvents = true;
                 options.Events.RaiseFailureEvents = true;
                 options.Events.RaiseSuccessEvents = true;
+                options.Authentication.CookieLifetime = TimeSpan.FromHours(10);
 
                 // Use a large chunk size for diagnostic data in development where it will be redirected to a local file.
                 if (builder.Environment.IsDevelopment())
