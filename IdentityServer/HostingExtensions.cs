@@ -56,7 +56,18 @@ internal static class HostingExtensions
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
         var migrationAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
         var identityServerSetting = new IdentityServerSettings();
+        
         builder.Configuration.GetSection("IdentityServer").Bind(identityServerSetting);
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("default", policy =>
+            {
+                policy.WithOrigins("https://www.upts.supakorn-sjb.com")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+            });
+        });
         
         builder.Services.AddRazorPages();
 
