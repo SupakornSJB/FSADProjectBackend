@@ -4,6 +4,7 @@ using Duende.IdentityServer.EntityFramework.DbContexts;
 using Duende.IdentityServer.EntityFramework.Mappers;
 using IdentityServer.Data;
 using IdentityServer.Models;
+using IdentityServer.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -53,6 +54,8 @@ internal static class HostingExtensions
     {
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
         var migrationAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
+        var identityServerSetting = new IdentityServerSettings();
+        builder.Configuration.GetSection("IdentityServer").Bind(identityServerSetting);
         
         builder.Services.AddRazorPages();
 
@@ -121,7 +124,7 @@ internal static class HostingExtensions
         return builder.Build();
     }
 
-    public static WebApplication ConfigurePipeline(this WebApplication app)
+    public static WebApplication ConfigurePipeline(this WebApplication app, IdentityServerSettings identityServerSetting)
     {
         app.UseSerilogRequestLogging();
 
@@ -130,7 +133,7 @@ internal static class HostingExtensions
             app.UseDeveloperExceptionPage();
         }
         
-        InitializeDatabase(app);        
+        InitializeDatabase(app, identityServerSetting);        
 
         app.UseStaticFiles();
         app.UseRouting();
@@ -144,7 +147,7 @@ internal static class HostingExtensions
         return app;
     }
     
-    private static void InitializeDatabase(IApplicationBuilder app)
+    private static void InitializeDatabase(IApplicationBuilder app, IdentityServerSettings identityServerSettings)
     {
         using var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>()!.CreateScope();
         serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
@@ -155,7 +158,7 @@ internal static class HostingExtensions
         
         if (!context.Clients.Any())
         {
-            foreach (var client in Config.Clients)
+            foreach (var client in Config.Clients(identityServerSettings.Clients))
             {
                 context.Clients.Add(client.ToEntity());
             }
