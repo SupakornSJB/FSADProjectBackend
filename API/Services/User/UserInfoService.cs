@@ -2,6 +2,7 @@
 using FSADProjectBackend.Interfaces.User;
 using Duende.IdentityModel.Client;
 using FSADProjectBackend.Viewmodels.User;
+using Shared.Viewmodels;
 
 namespace FSADProjectBackend.Services.User;
 
@@ -58,5 +59,34 @@ public class UserInfoService: IUserInfoService
             Website = userInfo.FirstOrDefault(x => x.Type == "website")?.Value,
             PreferredUsername = userInfo.FirstOrDefault(x => x.Type == "preferred_username")?.Value,
         };
+    }
+
+    public async Task<PublicUserViewmodel> GetUserInfoAsUserClaimsVm(string subject)
+    {
+        await SetupIdentityHttpClient();
+        var res = await _httpClient.GetAsync("https://localhost:5000/api/usermanager/" + subject); // Todo: Change to use environment variable
+        var content = await res.Content.ReadFromJsonAsync<UserClaimsViewmodel>();
+        
+        if (content == null) throw new Exception("Cannot get user info"); 
+        return new PublicUserViewmodel
+        {
+            Subject = content.Subject,
+            Name = content.Name,
+        };
+    }
+    
+    private async Task SetupIdentityHttpClient()
+    {
+        // Todo: Change to use environment variable
+        var token = await _httpClient.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+        {
+            Address = "https://localhost:5000/connect/token",            
+            ClientId = "m2m.client",
+            ClientSecret = "511536EF-F270-4058-80CA-1C89C192F69A",
+            Scope = "api1"
+        });
+        
+        if (token.IsError || token.AccessToken == null) throw new Exception(token.Error);
+        _httpClient.SetBearerToken(token.AccessToken);
     }
 }

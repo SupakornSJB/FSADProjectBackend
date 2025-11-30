@@ -1,9 +1,11 @@
-using FSADProjectBackend.Autofac; using FSADProjectBackend.Contexts;
+using FSADProjectBackend.Autofac;
+using FSADProjectBackend.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+var configuration = builder.Configuration;
 
 // Add services to the container.
 builder.Services.AddAuthorization(options =>
@@ -15,11 +17,10 @@ builder.Services.AddAuthorization(options =>
     });    
 });
 
-
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
-        options.Authority = "https://localhost:5000"; // IdentityServer URL, Todo: Change to use environment variable
+        options.Authority = configuration["IdentityServer:Authority"];
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -54,6 +55,7 @@ builder.Services.AddCors(options =>
             .AllowCredentials()
         );
 });
+
 builder.Services.AddEndpointsApiExplorer(); // Enables API explorer for Swagger
 builder.Services.AddSwaggerGen(c =>
 {

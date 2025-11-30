@@ -10,21 +10,24 @@ public class CreateProblemViewmodel
     public required string Content { get; set; }
     
     public ICollection<Attachment> Attachments { get; set; }   
+    public ICollection<string> Tags { get; set; }   
 }
 
 public static class CreateProblemViewmodelExtension
 {
     public static Models.Problem ConvertToProblem(this CreateProblemViewmodel viewmodel, UserClaimsViewmodel claims)
     {
-        return new Models.Problem 
+        return new Models.Problem
         {
             Name = viewmodel.Name,
             Content = viewmodel.Content,
-            Attachments = viewmodel.Attachments,
+            Attachments = viewmodel.Attachments ?? new List<Attachment>() ,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             Solutions = new List<ProblemSolution>(),
-            CreatedBy = claims
+            Comments = new List<Models.Comment>(),
+            CreatedBy = claims,
+            ViewCount = 0
         };
     }
 } 

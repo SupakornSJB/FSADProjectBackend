@@ -1,7 +1,11 @@
-﻿namespace FSADProjectBackend.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace FSADProjectBackend.Models;
 
 public class Contact
 {
+    [MaxLength(256)]
+    public string ProblemSolverId { get; set; }
     public string? Email { get; set; }
     public string? Phone { get; set; }
     public string? Address { get; set; }

@@ -7,6 +7,7 @@ namespace FSADProjectBackend.Contexts;
 public class MongoDbContext: DbContext
 {
     public DbSet<Problem> Problems { get; set; }
+    public DbSet<Project> Projects { get; set; }
 
     public MongoDbContext(DbContextOptions<MongoDbContext> options) : base(options) { }
     
