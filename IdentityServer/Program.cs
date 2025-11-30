@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text;
 using Duende.IdentityServer.Licensing;
 using IdentityServer;
+using IdentityServer.Settings;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -13,11 +14,13 @@ Log.Information("Starting up");
 try
 {
     var builder = WebApplication.CreateBuilder(args);
+    var identityServerConfiguration = new IdentityServerSettings();
+    builder.Configuration.GetSection("IdentityServer").Bind(identityServerConfiguration);
 
     var app = builder
         .ConfigureLogging()
         .ConfigureServices()
-        .ConfigurePipeline();
+        .ConfigurePipeline(identityServerConfiguration);
 
     // this seeding is only for the template to bootstrap the DB and users.
     // In production, you will likely want a different approach.

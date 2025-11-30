@@ -1,8 +1,8 @@
 ﻿services:
   api:
-    build:
-      context: .
-      dockerfile: Api/Dockerfile
+    image: supakornsjb02/fsadprojectbackend:latest
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
     depends_on:
       postgres:
         condition: service_healthy
@@ -16,9 +16,9 @@
           path: .
           
   identityserver:
-    build:
-      context: .
-      dockerfile: IdentityServer/Dockerfile
+    image: supakornsjb02/fsadprojectidentityserver:latest
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
     depends_on:
       postgres:
         condition: service_healthy
