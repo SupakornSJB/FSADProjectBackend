@@ -58,6 +58,15 @@ internal static class HostingExtensions
         var identityServerSetting = new IdentityServerSettings();
         
         builder.Configuration.GetSection("IdentityServer").Bind(identityServerSetting);
+        
+        builder.Services.Configure<ForwardedHeadersOptions>(options =>
+        {
+            options.ForwardedHeaders = ForwardedHeaders.XForwardedFor |
+                                       ForwardedHeaders.XForwardedProto;
+            options.KnownNetworks.Clear();
+            options.KnownProxies.Clear();
+        });
+        
         builder.Services.AddCors(options =>
         {
             options.AddPolicy("default", policy =>
