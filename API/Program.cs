@@ -99,6 +99,7 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
 app.UseCors(corsPolicy);
 app.UseAuthentication();
 app.UseAuthorization();
