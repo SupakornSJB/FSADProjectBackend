@@ -8,6 +8,7 @@ public class MongoDbContext: DbContext
 {
     public DbSet<Problem> Problems { get; set; }
     public DbSet<Project> Projects { get; set; }
+    public DbSet<AuditLog> AuditLogs { get; set; }
 
     public MongoDbContext(DbContextOptions<MongoDbContext> options) : base(options) { }
     

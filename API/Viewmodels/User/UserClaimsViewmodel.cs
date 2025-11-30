@@ -8,4 +8,5 @@ public class UserClaimsViewmodel
     public string FamilyName { get; set; }
     public string Website { get; set; }
     public string PreferredUsername { get; set; }
+    public string Role { get; set;  }
 }

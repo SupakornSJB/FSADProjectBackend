@@ -14,7 +14,7 @@ public static class CreateCommentViewmodelExtension
     {
         return new Models.Comment
         {
-            Id = ObjectId.GenerateNewId(),
+            Id = ObjectId.GenerateNewId().ToString(),
             Content = viewmodel.Content,
             CreatedAt = DateTime.Now,
             UpdatedAt = DateTime.Now,

@@ -1,10 +1,11 @@
 using IdentityServer.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace IdentityServer.Data;
 
-public class ApplicationIdentityDbContext : IdentityDbContext<ApplicationUser>
+public class ApplicationIdentityDbContext : IdentityDbContext<ApplicationUser, IdentityRole, string>
 {
     public ApplicationIdentityDbContext(DbContextOptions<ApplicationIdentityDbContext> options)
         : base(options)

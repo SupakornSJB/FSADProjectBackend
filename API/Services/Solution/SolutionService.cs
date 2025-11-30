@@ -4,6 +4,7 @@ using FSADProjectBackend.Interfaces.Solution;
 using FSADProjectBackend.Interfaces.User;
 using FSADProjectBackend.Models;
 using FSADProjectBackend.Viewmodels.Solution;
+using MongoDB.Bson;
 
 namespace FSADProjectBackend.Services.Solution;
 
@@ -20,7 +21,7 @@ public class SolutionService: ISolutionService
         _userInfoService = userInfoService;
     }
     
-    public async Task CreateSolution(string problemId, string content)
+    public async Task CreateSolution(string problemId, string content, string status)
     {
         var problem = await _mongoDbContext.Problems.FindAsync(problemId);
         if (problem == null)
@@ -29,14 +30,16 @@ public class SolutionService: ISolutionService
         }
 
         var userInfo = await _userInfoService.GetUserInfoAsUserClaimsVm();
-        problem.Comments.Add(
-            new Comment
+        problem.Solutions.Add(
+            new ProblemSolution
             {
+                Id = ObjectId.GenerateNewId().ToString(),
                 Content = content,
+                Comments = new List<Comment>(),
                 CreatedAt = new DateTime(),
                 UpdatedAt = new DateTime(),
                 CreatedBy = userInfo,
-                ChildComments = new List<Comment>()
+                Status = status
             }
         );
 
@@ -70,5 +73,33 @@ public class SolutionService: ISolutionService
             Problem = problem,
             Solution = solution
         };
+    }
+
+    public async Task UpdateSolution(string problemId, string solutionId, string content, string status)
+    {
+        var problem = await _problemService.GetProblemById(problemId);
+        var solution = problem?.Solutions.FirstOrDefault(x => x.Id.ToString() == solutionId);
+        if (solution == null || problem == null)
+        {
+            throw new Exception("Problem or solution not found"); 
+        }
+        
+        solution.Content = content;
+        solution.Status = status;
+        solution.UpdatedAt = DateTime.Now;
+        await _mongoDbContext.SaveChangesAsync();
+    }
+
+    public async Task DeleteSolution(string problemId, string solutionId)
+    {
+        var problem = await _problemService.GetProblemById(problemId);
+        var solution = problem?.Solutions.FirstOrDefault(x => x.Id.ToString() == solutionId);
+        if (solution == null || problem == null)
+        {
+            throw new Exception("Problem or solution not found"); 
+        }
+        
+        problem.Solutions.Remove(solution);
+        await _mongoDbContext.SaveChangesAsync();
     }
 }

@@ -3,7 +3,6 @@ using FSADProjectBackend.Interfaces.Problem;
 using FSADProjectBackend.Interfaces.User;
 using FSADProjectBackend.Models;
 using FSADProjectBackend.Viewmodels.Comment;
-using MongoDB.Bson;
 
 namespace FSADProjectBackend.Services.Problem;
 
@@ -30,8 +29,7 @@ public class ProblemCommentService: IProblemCommentService
     public async Task<Comment> GetCommentById(string problemId, string commentId)
     {
         var problem = await _problemService.GetProblemById(problemId);
-        var id = new ObjectId(commentId);
-        return problem?.Comments.FirstOrDefault(x => x.Id == id) ?? throw new Exception("Comment not found");
+        return problem?.Comments.FirstOrDefault(x => x.Id == commentId) ?? throw new Exception("Comment not found");
     }
     
     public async Task<string> CreateComment(string problemId, CreateCommentViewmodel comment)
@@ -82,13 +80,34 @@ public class ProblemCommentService: IProblemCommentService
     }
     
 
-    public void DeleteComment(string problemId, string commentId)
+    public async Task DeleteComment(string problemId, string commentId)
     {
-        throw new NotImplementedException();
+        var problem = await _mongoDbContext.Problems.FindAsync(problemId);
+        if (problem == null || problem.Comments == null )
+        {
+            throw new Exception("Problem or comment not found");
+        }
+
+        var comment = problem.Comments.FirstOrDefault(x => x.Id == commentId);
+        if (comment == null)
+        {
+            throw new Exception("Problem or comment not found");
+        }
+
+        problem.Comments.Remove(comment);
+        await _mongoDbContext.SaveChangesAsync();
     }
     
     public void DeleteNestedComment(string problemId, string parentCommentId, string childCommentId)
     {
         throw new NotImplementedException();
+    }
+    
+    public async Task UpdateComment(string problemId, string commentId, string content)
+    {
+        var comment = await GetCommentById(problemId, commentId);
+        comment.Content = content;
+        comment.UpdatedAt = DateTime.Now;
+        await _mongoDbContext.SaveChangesAsync();
     }
 }

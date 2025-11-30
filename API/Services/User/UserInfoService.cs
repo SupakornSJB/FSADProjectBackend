@@ -58,6 +58,7 @@ public class UserInfoService: IUserInfoService
             GivenName = userInfo.FirstOrDefault(x => x.Type == "given_name")?.Value,
             Website = userInfo.FirstOrDefault(x => x.Type == "website")?.Value,
             PreferredUsername = userInfo.FirstOrDefault(x => x.Type == "preferred_username")?.Value,
+            Role = userInfo.FirstOrDefault(x => x.Type == "role")?.Value,
         };
     }
 

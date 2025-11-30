@@ -1,5 +1,6 @@
 using FSADProjectBackend.Autofac;
 using FSADProjectBackend.Contexts;
+using FSADProjectBackend.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -80,6 +81,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();   
 }
 
+
 // Autoapply migrations
 using (var scope = app.Services.CreateScope())
 {
@@ -98,9 +100,12 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+
 app.UseHttpsRedirection();
+app.UseRouting();
 app.UseCors(corsPolicy);
 app.UseAuthentication();
+// app.UseAuditLogging();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

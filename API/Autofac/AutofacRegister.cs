@@ -5,6 +5,7 @@ using FSADProjectBackend.Interfaces.Problem;
 using FSADProjectBackend.Interfaces.Solution;
 using FSADProjectBackend.Interfaces.Tag;
 using FSADProjectBackend.Interfaces.User;
+using FSADProjectBackend.Services.AuditLog;
 using FSADProjectBackend.Services.Problem;
 using FSADProjectBackend.Services.Solution;
 using FSADProjectBackend.Services.Tag;
@@ -83,6 +84,10 @@ public static class AutofacRegister
                 ))
                 .As<ISolutionService>()
                 .InstancePerLifetimeScope();
+
+            builder.Register(c => new AuditLogService(c.Resolve<MongoDbContext>()))
+                .As<IAuditLogService>()
+                .SingleInstance();
         });
     }
 

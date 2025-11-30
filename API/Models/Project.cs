@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace FSADProjectBackend.Models;
@@ -7,6 +8,7 @@ public class Project
 {
     [BsonId]
     [BsonElement("_id")]
+    [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; }
     [MaxLength(256)]
     public required string Name { get; set; }
