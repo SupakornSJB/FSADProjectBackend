@@ -137,11 +137,12 @@ internal static class HostingExtensions
         InitializeDatabase(app, identityServerSetting);        
 
         app.UseStaticFiles();
-        app.UseCors("default");
         app.UseForwardedHeaders(new ForwardedHeadersOptions
         {
             ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
         });
+        
+        app.UseCors("default");
         app.UseRouting();
         app.UseIdentityServer();
         app.UseAuthorization();
