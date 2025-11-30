@@ -5,6 +5,7 @@ using Duende.IdentityServer.EntityFramework.Mappers;
 using IdentityServer.Data;
 using IdentityServer.Models;
 using IdentityServer.Settings;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -73,17 +74,17 @@ internal static class HostingExtensions
             options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
         });
         
-        builder.Services.AddAuthentication()
-            .AddCookie("idsrv", opts =>
-            {
-                opts.Cookie.SameSite = SameSiteMode.None;
-                opts.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-            })
-            .AddCookie("idsrv.external", opts =>
-            {
-                opts.Cookie.SameSite = SameSiteMode.None;
-                opts.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-            });
+        builder.Services.PostConfigure<CookieAuthenticationOptions>("idsrv", options =>
+        {
+            options.Cookie.SameSite = SameSiteMode.None;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        });
+
+        builder.Services.PostConfigure<CookieAuthenticationOptions>("idsrv.external", options =>
+        {
+            options.Cookie.SameSite = SameSiteMode.None;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        });
         
         builder.Services.AddCors(options =>
         {
