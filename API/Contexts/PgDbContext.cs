@@ -11,9 +11,11 @@ public class PgDbContext(DbContextOptions<PgDbContext> options) : DbContext(opti
     public DbSet<UserProblemVoteMapping> UserProblemVoteMappings { get; set; }
     public DbSet<Tag> Tags { get; set; }
     public DbSet<ProblemTagMapping> ProblemTagMappings { get; set; }
+    public DbSet<Contact> Contacts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // User Comment Vote Mappings
         modelBuilder.Entity<UserProblemCommentVoteMapping>()
             .HasKey(x => new { x.UserSubject, x.ProblemId, x.CommentId });
         
@@ -25,6 +27,7 @@ public class PgDbContext(DbContextOptions<PgDbContext> options) : DbContext(opti
             .WithMany(x => x.MembersMapping)
             .HasForeignKey(x => x.ProblemSolverId);
         
+        // Problem Vote Mappings
         modelBuilder.Entity<UserProblemVoteMapping>()
             .HasKey(x => new { x.UserSubject, x.ProblemId });
         
@@ -35,6 +38,12 @@ public class PgDbContext(DbContextOptions<PgDbContext> options) : DbContext(opti
             .HasOne(x => x.Tag)
             .WithMany(x => x.ProblemTagMappings)
             .HasForeignKey(x => x.TagId);
+
+        // Contact Mapping
+        modelBuilder.Entity<Contact>()
+            .HasKey(x => x.ProblemSolverId);
+        modelBuilder.Entity<ProblemSolver>()
+            .HasOne(x => x.Contact);
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) { }

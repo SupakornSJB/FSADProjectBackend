@@ -31,7 +31,7 @@ public class ProblemCommentService: IProblemCommentService
     {
         var problem = await _problemService.GetProblemById(problemId);
         var id = new ObjectId(commentId);
-        return problem.Comments.FirstOrDefault(x => x.Id == id) ?? throw new Exception("Comment not found");
+        return problem?.Comments.FirstOrDefault(x => x.Id == id) ?? throw new Exception("Comment not found");
     }
     
     public async Task<string> CreateComment(string problemId, CreateCommentViewmodel comment)
@@ -84,5 +84,11 @@ public class ProblemCommentService: IProblemCommentService
 
     public void DeleteComment(string problemId, string commentId)
     {
+        throw new NotImplementedException();
+    }
+    
+    public void DeleteNestedComment(string problemId, string parentCommentId, string childCommentId)
+    {
+        throw new NotImplementedException();
     }
 }

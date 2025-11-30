@@ -30,21 +30,21 @@ public class ProjectController: ControllerBase
     }
 
     [HttpGet("{id}")]
-    public IActionResult GetProjectById(string id)
+    public async Task<IActionResult> GetProjectById(string id)
     {
-        return new JsonResult(_projectService.GetProject(id));
+        return new JsonResult(await _projectService.GetProject(id));
     }
 
     [HttpPost]
-    public IActionResult CreateNewProject([FromBody] CreateProjectViewmodel createProjectViewmodel)
+    public async Task<IActionResult> CreateNewProject([FromBody] CreateProjectViewmodel createProjectViewmodel)
     {
-        return new JsonResult(_projectService.CreateProject(createProjectViewmodel));
+        return new JsonResult(await _projectService.CreateProject(createProjectViewmodel));
     }
 
     [HttpGet("user")]
-    public IActionResult GetUserInvolvedProjects([FromQuery] int? page = null, [FromQuery] int? pageSize = null)
+    public async Task<IActionResult> GetUserInvolvedProjects([FromQuery] int? page = null, [FromQuery] int? pageSize = null)
     {
-        return new JsonResult(_userProjectService.GetProjectsOfUser(page,  pageSize));
+        return new JsonResult(await _userProjectService.GetProjectsOfUser(page,  pageSize));
     }
 
     [HttpGet("user/{userSubject}")]

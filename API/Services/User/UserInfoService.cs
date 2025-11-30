@@ -64,7 +64,7 @@ public class UserInfoService: IUserInfoService
     public async Task<PublicUserViewmodel> GetUserInfoAsUserClaimsVm(string subject)
     {
         await SetupIdentityHttpClient();
-        var res = await _httpClient.GetAsync("https://localhost:5000/api/usermanager/" + subject);
+        var res = await _httpClient.GetAsync("https://localhost:5000/api/usermanager/" + subject); // Todo: Change to use environment variable
         var content = await res.Content.ReadFromJsonAsync<UserClaimsViewmodel>();
         
         if (content == null) throw new Exception("Cannot get user info"); 

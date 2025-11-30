@@ -64,7 +64,7 @@ public class ProblemSolverController: ControllerBase
     [HttpDelete("{groupId}")]
     public async Task<IActionResult> DeleteProblemSolverGroup(string groupId)
     {
-        _problemSolverService.DeleteProblemSolver(groupId);
+        await _problemSolverService.DeleteProblemSolver(groupId);
         return Ok();
     }
 }
