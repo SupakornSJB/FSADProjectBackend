@@ -5,6 +5,7 @@ using Duende.IdentityServer.EntityFramework.Mappers;
 using IdentityServer.Data;
 using IdentityServer.Models;
 using IdentityServer.Settings;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -136,6 +137,11 @@ internal static class HostingExtensions
         InitializeDatabase(app, identityServerSetting);        
 
         app.UseStaticFiles();
+        app.UseCors("default");
+        app.UseForwardedHeaders(new ForwardedHeadersOptions
+        {
+            ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+        });
         app.UseRouting();
         app.UseIdentityServer();
         app.UseAuthorization();
