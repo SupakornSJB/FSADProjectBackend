@@ -55,6 +55,9 @@ internal static class HostingExtensions
     public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
     {
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+        var frontendUrl = builder.Configuration.GetSection("Project").GetValue<string>("FrontendUrl");
+        var identityServerUrl = builder.Configuration.GetSection("Project").GetValue<string>("IdentityServerUrl"); 
+        
         var migrationAssembly = typeof(Program).GetTypeInfo().Assembly.GetName().Name;
         var identityServerSetting = new IdentityServerSettings();
         
@@ -90,7 +93,7 @@ internal static class HostingExtensions
         {
             options.AddPolicy("default", policy =>
             {
-                policy.WithOrigins("https://www.upts.supakorn-sjb.com")
+                policy.WithOrigins(frontendUrl)
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();
@@ -110,7 +113,7 @@ internal static class HostingExtensions
         builder.Services.AddAuthentication("Bearer")
             .AddJwtBearer("Bearer", options =>
             {
-                options.Authority = "https://localhost:5000"; // IdentityServer address
+                options.Authority = identityServerUrl; 
                 options.RequireHttpsMetadata = false;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {

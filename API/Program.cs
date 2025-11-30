@@ -45,11 +45,13 @@ builder.Services.AddAuthentication("Bearer")
 
 builder.Services.AddControllers();
 
+var frontendUrl = builder.Configuration.GetRequiredSection("Project").GetValue<string>("FrontendUrl");
+
 var corsPolicy = "CorsPolicy";
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: corsPolicy,
-        policy => policy.WithOrigins("http://localhost:5173")  // Frontend URL, Todo: Change to use environment variable
+        policy => policy.WithOrigins(frontendUrl)  // Frontend URL, Todo: Change to use environment variable
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials()
