@@ -34,12 +34,12 @@ jobs:
       # Build API image
       - name: Build API Docker image
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/fsadprojectbackend:latest ./API
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/fsadprojectbackend:latest -f ./API/Dockerfile ./API
           
       # Build IdentityServer image
       - name: Build IdentityServer Docker image
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/fsadprojectidentityserver:latest ./IdentityServer
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/fsadprojectidentityserver:latest -f ./IdentityServer/Dockerfile ./IdentityServer
       
       # Push both images
       - name: Push Docker images
