@@ -7,7 +7,6 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 var authority = configuration.GetRequiredSection("IdentityServer").GetValue<string>("Authority");
-Console.WriteLine($"Identity - Authority: {authority}");
 
 // Add services to the container.
 builder.Services.AddAuthorization(options =>
@@ -26,7 +25,8 @@ builder.Services.AddAuthentication("Bearer")
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateAudience = false
+            ValidateAudience = false,
+            ValidateIssuer = true
         };
         
         // For debugging purposes only
