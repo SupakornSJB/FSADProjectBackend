@@ -26,7 +26,8 @@ builder.Services.AddAuthentication("Bearer")
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateAudience = false,
-            ValidateIssuer = true
+            ValidateIssuer = true,
+            ValidIssuer = authority ?? "https://upts-identityserver.supakorn-sjb.com"
         };
         
         // For debugging purposes only
