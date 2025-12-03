@@ -1,12 +1,13 @@
 using FSADProjectBackend.Autofac;
 using FSADProjectBackend.Contexts;
-using FSADProjectBackend.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
+var authority = configuration.GetRequiredSection("IdentityServer").GetValue<string>("Authority");
+Console.WriteLine($"Identity - Authority: {authority}");
 
 // Add services to the container.
 builder.Services.AddAuthorization(options =>
@@ -21,7 +22,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
-        options.Authority = configuration["IdentityServer:Authority"];
+        options.Authority = authority ?? "https://upts-identityserver.supakorn-sjb.com";
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
