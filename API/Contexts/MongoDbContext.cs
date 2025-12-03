@@ -19,6 +19,6 @@ public class MongoDbContext: DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseMongoDB("mongodb://localhost:27017", "Database");  // Todo: Change to use environment variable
+        optionsBuilder.UseMongoDB("mongodb://mongo:27017", "Database");  // Todo: Change to use environment variable
     }
 }
