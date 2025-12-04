@@ -11,6 +11,8 @@ public class CreateProblemViewmodel
     
     public ICollection<Attachment> Attachments { get; set; }   
     public ICollection<string> Tags { get; set; }   
+    
+    public string Status { get; set; }
 }
 
 public static class CreateProblemViewmodelExtension
@@ -29,7 +31,7 @@ public static class CreateProblemViewmodelExtension
             Comments = new List<Models.Comment>(),
             CreatedBy = claims,
             ViewCount = 0,
-            Status = "Open" 
+            Status = viewmodel.Status
         };
     }
 } 

@@ -98,6 +98,7 @@ public class ProblemService: IProblemService
         selectedProblem.Name = problem.Name;
         selectedProblem.Content = problem.Content;
         selectedProblem.Attachments = problem.Attachments;
+        selectedProblem.Status = problem.Status;
         
         await _mongoDbContext.SaveChangesAsync();
         return selectedProblem;
