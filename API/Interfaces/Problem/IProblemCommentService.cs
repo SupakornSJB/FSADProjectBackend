@@ -14,5 +14,6 @@ public interface IProblemCommentService
 
     public Task<string> ReplyToComment(string problemId, string parentCommentId, CreateCommentViewmodel comment);
 
-    public void DeleteComment(string problemId, string commentId);
+    public Task DeleteComment(string problemId, string commentId);
+    public Task UpdateComment(string problemId, string commentId, string content);
 }

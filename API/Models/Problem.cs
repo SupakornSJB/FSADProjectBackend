@@ -9,7 +9,8 @@ public class Problem
 {
     [BsonId]
     [BsonElement("_id")]
-    public ObjectId Id { get; set; } 
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string Id { get; set; } 
     
     [MaxLength(256)]
     public required string Name { get; set; }
@@ -26,4 +27,5 @@ public class Problem
     public ICollection<ProblemSolution> Solutions { get; set; }
     public ICollection<Attachment> Attachments { get; set; }
     public required int ViewCount { get; set; }
+    public string? Status { get; set; }
 }

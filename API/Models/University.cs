@@ -8,7 +8,8 @@ public class University
 {
    [BsonId]
    [BsonElement("_id")]
-   public required ObjectId Id { get; set;} 
+   [BsonRepresentation(BsonType.ObjectId)]
+   public required string Id { get; set;} 
    
    [MaxLength(256)]
    public required string Name { get; set;}

@@ -4,6 +4,7 @@ using Duende.IdentityServer.EntityFramework.DbContexts;
 using Duende.IdentityServer.EntityFramework.Mappers;
 using IdentityServer.Data;
 using IdentityServer.Models;
+using IdentityServer.Services;
 using IdentityServer.Settings;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -12,7 +13,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using Serilog.Filters;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace IdentityServer;
 
@@ -163,6 +163,7 @@ internal static class HostingExtensions
                         sql => sql.MigrationsAssembly(migrationAssembly));
                 };
             })
+            .AddProfileService<ProfileService>()
             .AddLicenseSummary();
 
         return builder.Build();
@@ -194,7 +195,7 @@ internal static class HostingExtensions
         return app;
     }
     
-    private static void InitializeDatabase(IApplicationBuilder app, IdentityServerSettings identityServerSettings)
+    private static async Task InitializeDatabase(IApplicationBuilder app, IdentityServerSettings identityServerSettings)
     {
         using var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>()!.CreateScope();
         serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
@@ -228,6 +229,53 @@ internal static class HostingExtensions
                 context.ApiScopes.Add(resource.ToEntity());
             }
             context.SaveChanges();
+        }
+
+        if (!context.ApiResources.Any())
+        {
+            foreach (var resource in Config.ApiResources)
+            {
+                context.ApiResources.Add(resource.ToEntity());
+            } 
+            context.SaveChanges();
+        }
+        
+        var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        var userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+        string[] roles = { "Admin", "User" };
+
+        foreach (var role in roles)
+        {
+            if (!await roleManager.RoleExistsAsync(role))
+            {
+                await roleManager.CreateAsync(new IdentityRole(role));
+            }
+        }
+
+        var adminEmail = "admin@upts.com";
+        var adminUser = await userManager.FindByEmailAsync(adminEmail);
+
+        if (adminUser == null)
+        {
+            adminUser = new ApplicationUser
+            {
+                UserName = adminEmail,
+                Email = adminEmail,
+                EmailConfirmed = true
+            };
+
+            var result = await userManager.CreateAsync(adminUser, "Admin123!@#");
+
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(adminUser, "Admin");
+            }
+            else
+            {
+                throw new Exception("Failed to create default admin user: " +
+                                    string.Join(", ", result.Errors.Select(e => e.Description)));
+            }
         }
     }
 }

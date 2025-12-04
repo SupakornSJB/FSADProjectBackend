@@ -35,6 +35,13 @@ public class ProblemCommentController: ControllerBase
         return Ok();
     }
 
+    [HttpPut("{problemId}/{commentId}", Name = "UpdateComment")]
+    public async Task<IActionResult> UpdateComment(string problemId, string commentId, [FromBody] CreateCommentViewmodel content)
+    {
+        await _problemCommentService.UpdateComment(problemId, commentId, content.Content);     
+        return Ok();
+    }
+
     [HttpPut("{problemId}/{commentId}/{isUpvote}", Name = "UpvoteOrDownvoteComment")]
     public async Task<IActionResult> UpvoteOrDownvoteComment(string problemId, string commentId, bool isUpvote)
     {
@@ -51,4 +58,12 @@ public class ProblemCommentController: ControllerBase
             Downvote = await _problemCommentUpvoteDownvoteService.GetUpvoteOrDownvoteNumberOfComments(problemId, false),
         });
     }
+
+   [HttpDelete("{problemId}/{commentId}", Name = "DeleteComment")]
+    public async Task<IActionResult> DeleteComment(string problemId, string commentId)
+    {
+        await _problemCommentService.DeleteComment(problemId, commentId);
+        return Ok();
+    }
+    
 }

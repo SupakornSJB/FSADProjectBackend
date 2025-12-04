@@ -73,11 +73,6 @@ public class ProblemController: ControllerBase
     public async Task<ActionResult<Problem>> GetUserCreatedProblem()
     {
         var problems = await _problemService.GetUsersProblems();
-        if (problems.Count == 0)
-        {
-            return NotFound();   
-        }
-        
         return Ok(problems);  
     }
 
@@ -85,8 +80,8 @@ public class ProblemController: ControllerBase
     public async Task<IActionResult> CreateProblem(CreateProblemViewmodel problem)
     {
         var created = await _problemService.CreateProblem(problem);
-        await _tagService.UpdateProblemTags(created.Id.ToString(), problem.Tags);
-        return CreatedAtAction(nameof(GetProblem), new { id = created.Id.ToString() }, created);   
+        await _tagService.UpdateProblemTags(created.Id, problem.Tags);
+        return CreatedAtAction(nameof(GetProblem), new { id = created.Id }, created);   
     }
 
     [HttpPut("{id}")] 
@@ -123,5 +118,17 @@ public class ProblemController: ControllerBase
     {
         await _problemUpvoteDownvoteService.UpvoteOrDownvoteProblem(problemId, isUpvote);
         return Ok();   
+    }
+
+    [HttpGet("upvote-downvote/{isUpvote}")]
+    public async Task<IActionResult> GetUpvoteOrDownvoteListOfProblems(bool isUpvote)
+    {
+        return new JsonResult(_problemUpvoteDownvoteService.GetUpvoteOrDownvoteNumber(isUpvote));
+    }
+
+    [HttpGet("upvote-downvote/user")]
+    public async Task<IActionResult> GetUpvoteOrDownvoteListOfUser()
+    {
+        return new JsonResult(await _problemUpvoteDownvoteService.GetUpvoteOrDownvoteListMadeByUser());
     }
 }

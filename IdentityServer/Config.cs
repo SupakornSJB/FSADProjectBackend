@@ -1,3 +1,4 @@
+using Duende.IdentityModel;
 using Duende.IdentityServer.Models;
 using IdentityServer.Settings;
 
@@ -13,7 +14,7 @@ public static class Config
 
     public static IEnumerable<ApiScope> ApiScopes =>
     [
-        new ApiScope(name: "api1", displayName: "Api 1")
+        new ApiScope(name: "api1", displayName: "Api 1", userClaims: [ JwtClaimTypes.Role ] )
     ];
 
     public static IEnumerable<Client> Clients(ClientSettings[] clientSettings)
@@ -41,4 +42,21 @@ public static class Config
             AllowOfflineAccess = c.AllowOfflineAccess
         });
     }
+
+    public static IEnumerable<ApiResource> ApiResources =>
+    [
+        new ApiResource()
+            {
+                Name = "api1",
+                Scopes = { "api1" },
+                UserClaims =
+                {
+                    "given_name",
+                    "family_name",
+                    "email",
+                    "first_name",
+                    "last_name"
+                }
+            }
+    ];   
 }

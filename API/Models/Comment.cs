@@ -9,7 +9,8 @@ public class Comment
 {
     [BsonId]
     [BsonElement("_id")]
-    public ObjectId Id { get; set; }
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string Id { get; set; }
     
     [MaxLength(2048)]
     public required string Content { get; set; }

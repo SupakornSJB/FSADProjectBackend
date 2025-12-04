@@ -19,15 +19,17 @@ public static class CreateProblemViewmodelExtension
     {
         return new Models.Problem
         {
+            Id = ObjectId.GenerateNewId().ToString(),
             Name = viewmodel.Name,
             Content = viewmodel.Content,
-            Attachments = viewmodel.Attachments ?? new List<Attachment>() ,
+            Attachments = viewmodel.Attachments ?? new List<Attachment>(),
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow,
             Solutions = new List<ProblemSolution>(),
             Comments = new List<Models.Comment>(),
             CreatedBy = claims,
-            ViewCount = 0
+            ViewCount = 0,
+            Status = "Open" 
         };
     }
 } 

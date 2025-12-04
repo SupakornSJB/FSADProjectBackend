@@ -9,13 +9,13 @@ public class ProblemSolution
 {
    [BsonId]
    [BsonElement("_id")]
-   public required ObjectId Id { get; set; }
-   
+   [BsonRepresentation(BsonType.ObjectId)]
+   public required string Id { get; set; }
    [MaxLength(2048)]
    public required string Content { get; set; }
    public required UserClaimsViewmodel CreatedBy { get; set; }
+   public string Status { get; set; }
    public required DateTime CreatedAt { get; set; }
    public required DateTime UpdatedAt { get; set; }
-   
    public required ICollection<Comment> Comments { get; set; }
 }

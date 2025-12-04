@@ -3,6 +3,7 @@ using FSADProjectBackend.Interfaces.Problem;
 using FSADProjectBackend.Interfaces.Tag;
 using FSADProjectBackend.Interfaces.User;
 using FSADProjectBackend.Viewmodels.Problem;
+using Microsoft.VisualBasic;
 using MongoDB.Bson;
 
 namespace FSADProjectBackend.Services.Problem;
@@ -61,14 +62,13 @@ public class ProblemService: IProblemService
     
     public async Task<Models.Problem?> GetProblemById(string id)
     {
-        var problem = await _mongoDbContext.Problems.FindAsync(new ObjectId(id));
+        var problem = await _mongoDbContext.Problems.FindAsync(id);
         return problem;
     }
 
     public async Task<IEnumerable<Models.Problem>> GetProblemsByIds(string[] ids)
     {
-        var objectIds = ids.Select(x => new ObjectId(x));
-        return _mongoDbContext.Problems.Where(x => objectIds.Contains(x.Id));
+        return _mongoDbContext.Problems.Where(x => ids.Contains(x.Id));
     }
 
     public async Task<List<Models.Problem>> GetUsersProblems()
@@ -112,7 +112,6 @@ public class ProblemService: IProblemService
         }
         
         await VerifyProblemAccess(selectedProblem);
-        
         _mongoDbContext.Problems.Remove(selectedProblem);
         await _mongoDbContext.SaveChangesAsync();
     }
@@ -130,6 +129,7 @@ public class ProblemService: IProblemService
 
     public async Task IncrementViewCount(Models.Problem problem)
     {
+        if (problem == null) return;
         problem.ViewCount++;
         await _mongoDbContext.SaveChangesAsync();
     }

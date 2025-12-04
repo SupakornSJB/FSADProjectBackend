@@ -26,7 +26,7 @@ public class UserInfoService: IUserInfoService
         }
         
         var accessToken = authHeader.Substring("Bearer ".Length).Trim();
-        var disco = await _httpClient.GetDiscoveryDocumentAsync("https://localhost:5000"); // Todo: Change to use environment variable
+        var disco = await _httpClient.GetDiscoveryDocumentAsync("https://upts-identityserver.supakorn-sjb.com"); // Todo: Change to use environment variable
 
         if (disco.IsError)
         {
@@ -58,13 +58,14 @@ public class UserInfoService: IUserInfoService
             GivenName = userInfo.FirstOrDefault(x => x.Type == "given_name")?.Value,
             Website = userInfo.FirstOrDefault(x => x.Type == "website")?.Value,
             PreferredUsername = userInfo.FirstOrDefault(x => x.Type == "preferred_username")?.Value,
+            Role = userInfo.FirstOrDefault(x => x.Type == "role")?.Value,
         };
     }
 
     public async Task<PublicUserViewmodel> GetUserInfoAsUserClaimsVm(string subject)
     {
         await SetupIdentityHttpClient();
-        var res = await _httpClient.GetAsync("https://localhost:5000/api/usermanager/" + subject); // Todo: Change to use environment variable
+        var res = await _httpClient.GetAsync("https://upts-identityserver.supakorn-sjb.com/api/usermanager/" + subject); // Todo: Change to use environment variable
         var content = await res.Content.ReadFromJsonAsync<UserClaimsViewmodel>();
         
         if (content == null) throw new Exception("Cannot get user info"); 
@@ -77,10 +78,9 @@ public class UserInfoService: IUserInfoService
     
     private async Task SetupIdentityHttpClient()
     {
-        // Todo: Change to use environment variable
         var token = await _httpClient.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
         {
-            Address = "https://localhost:5000/connect/token",            
+            Address = "https://upts-identityserver.supakorn-sjb.com/connect/token",            
             ClientId = "m2m.client",
             ClientSecret = "511536EF-F270-4058-80CA-1C89C192F69A",
             Scope = "api1"

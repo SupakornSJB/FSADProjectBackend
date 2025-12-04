@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
+var authority = configuration.GetRequiredSection("IdentityServer").GetValue<string>("Authority");
 
 // Add services to the container.
 builder.Services.AddAuthorization(options =>
@@ -20,11 +21,13 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
-        options.Authority = configuration["IdentityServer:Authority"];
+        options.Authority = authority ?? "https://upts-identityserver.supakorn-sjb.com";
         options.RequireHttpsMetadata = false;
         options.TokenValidationParameters = new TokenValidationParameters
         {
-            ValidateAudience = false
+            ValidateAudience = false,
+            ValidateIssuer = true,
+            ValidIssuer = authority ?? "https://upts-identityserver.supakorn-sjb.com"
         };
         
         // For debugging purposes only
@@ -80,6 +83,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();   
 }
 
+
 // Autoapply migrations
 using (var scope = app.Services.CreateScope())
 {
@@ -98,10 +102,12 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
+
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseCors(corsPolicy);
 app.UseAuthentication();
+// app.UseAuditLogging();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();

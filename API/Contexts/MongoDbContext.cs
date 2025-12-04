@@ -8,6 +8,7 @@ public class MongoDbContext: DbContext
 {
     public DbSet<Problem> Problems { get; set; }
     public DbSet<Project> Projects { get; set; }
+    public DbSet<AuditLog> AuditLogs { get; set; }
 
     public MongoDbContext(DbContextOptions<MongoDbContext> options) : base(options) { }
     
@@ -18,6 +19,6 @@ public class MongoDbContext: DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseMongoDB("mongodb://localhost:27017", "Database");  // Todo: Change to use environment variable
+        optionsBuilder.UseMongoDB("mongodb://mongo:27017", "Database");  // Todo: Change to use environment variable
     }
 }
